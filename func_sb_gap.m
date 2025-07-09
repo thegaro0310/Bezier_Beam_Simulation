@@ -1,16 +1,16 @@
-function ftar = func_sb_gap(GAP,NINNER,NOUTER,pointsxIN,pointsyIN,pointsxOU,pointsyOU,YOUNG,NUXY,DENS,OPDIM,IPDIM,IPDIMOU,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL)
+function ftar = func_sb_gap(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL)
 % calculate objective
 % N, mm, tonne, sec, MPa
 format long
 
 % upper beam
-%pointsxIN = [xL_1b(1:end)];
-%pointsyIN = [yL_1b(1:end)];   % 
+%pointsxU = [xL_1b(1:end)];
+%pointsyU = [yL_1b(1:end)];   % 
 
 % lower beam
-%pointsxOU = [xL_1a(1:end)];
-%pointsyOU = [yL_1a(1:end)];   % 
-pointsyOU = pointsyOU - GAP;   
+%pointsxL = [xL_1a(1:end)];
+%pointsyL = [yL_1a(1:end)];   % 
+pointsyL = pointsyL - GAP;   
 
 %% static analysis
 plane_file = fopen('sb.inp','w+');
@@ -24,35 +24,35 @@ fprintf (plane_file , 'abaqus job=sb interactive\n');
 fprintf (plane_file , 'gawk -f oh.awk sb.dat > sb_fea.txt\n');
 % Print out the set for upper nodes
 fprintf (plane_file , '*NODE, nset=nset_upper\n');
-for i = 1:size(pointsxIN,1)           % Create nodes of inner beam
-    fprintf (plane_file , '%d , %6e , %6e, 0\n' , i , pointsxIN(i) , pointsyIN(i));
+for i = 1:size(pointsxU,1)           % Create nodes of inner beam
+    fprintf (plane_file , '%d , %6e , %6e, 0\n' , i , pointsxU(i) , pointsyU(i));
 end
 % Print out the set for lower nodes
 fprintf (plane_file , '*NODE, nset=nset_lower\n');
-for i = 1:size(pointsxOU,1)           % Create the 1st node to next to the last node of outer beam
-    fprintf (plane_file , '%d , %6e , %6e, 0\n' , size(pointsxIN,1)+i , pointsxOU(i), pointsyOU(i));
+for i = 1:size(pointsxL,1)           % Create the 1st node to next to the last node of outer beam
+    fprintf (plane_file , '%d , %6e , %6e, 0\n' , size(pointsxU,1)+i , pointsxL(i), pointsyL(i));
 end
 fprintf (plane_file , '*NSET, NSET=nset_anchor_upper\n');
 fprintf (plane_file , '%d,\n', 1);
 fprintf (plane_file , '*NSET, NSET=nset_end\n');
-fprintf (plane_file , '%d,%d \n', size(pointsxIN,1),size(pointsxIN,1)+size(pointsxOU,1));
+fprintf (plane_file , '%d,%d \n', size(pointsxU,1),size(pointsxU,1)+size(pointsxL,1));
 fprintf (plane_file , '*NSET, NSET=nset_monitor\n');
-fprintf (plane_file , '%d, \n', size(pointsxIN,1));
+fprintf (plane_file , '%d, \n', size(pointsxU,1));
 fprintf (plane_file , '*NSET, NSET=nset_anchor_lower\n');
-fprintf (plane_file , '%d,\n', size(pointsxIN,1)+1);
+fprintf (plane_file , '%d,\n', size(pointsxU,1)+1);
 fprintf (plane_file , '*NSET, NSET=nset_anchor\n');
-fprintf (plane_file , '%d,%d \n', 1,size(pointsxIN,1)+1);
+fprintf (plane_file , '%d,%d \n', 1,size(pointsxU,1)+1);
 fprintf (plane_file , '*NSET, NSET=nset_all\n');
 fprintf (plane_file , 'nset_upper,nset_lower \n');
 
 fprintf (plane_file , '** --- Mesh the beam --- \n');
 fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamIN\n');
-for i = 1:NINNER  % upper beam
+for i = 1:UPPER  % upper beam
     fprintf (plane_file , '%d , %d , %d\n', i, i, i+1);
 end
 fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamOU\n');
-for i = 1:NOUTER  % lower beam
-    fprintf (plane_file , '%d , %d , %d\n', NINNER+i, size(pointsxIN,1)+i, size(pointsxIN,1)+i+1);
+for i = 1:LOWER  % lower beam
+    fprintf (plane_file , '%d , %d , %d\n', UPPER+i, size(pointsxU,1)+i, size(pointsxU,1)+i+1);
 end
 
 fprintf (plane_file , '*ELSET,ELSET=elset_beam\n');
@@ -65,12 +65,12 @@ fprintf (plane_file , '*DENSITY\n');
 fprintf (plane_file , '%6e\n',DENS);
 
 fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamIN,MATERIAL=POM\n');
-fprintf (plane_file , '%f,%f\n',OPDIM,IPDIM);
+fprintf (plane_file , '%f,%f\n',OPDIM,IPDIMU);
 fprintf (plane_file , '** dimension along the first beam section axis, dimension along the second beam section axis\n');
 fprintf (plane_file , '%d,%d,%d\n',0,0,-1);
 fprintf (plane_file , '** First, second, third direction cosine of the first beam section axis \n');
 fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamOU,MATERIAL=POM\n');
-fprintf (plane_file , '%f,%f\n',OPDIM,IPDIMOU);
+fprintf (plane_file , '%f,%f\n',OPDIM,IPDIML);
 fprintf (plane_file , '** dimension along the first beam section axis, dimension along the second beam section axis\n');
 fprintf (plane_file , '%d,%d,%d\n',0,0,-1);
 fprintf (plane_file , '** First, second, third direction cosine of the first beam section axis \n');

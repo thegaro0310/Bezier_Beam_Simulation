@@ -1,6 +1,6 @@
 % N, mm, tonne, sec, MPa
 % 7pt:  7 Bezier curve control points
-% N 40: N=NINNER=NOUTER
+% N 40: N=UPPER=LOWER
 %
 % gap between the upper and lower beam for the actuation shuttle
 % force outputs at the anchors for the gap case  
@@ -18,7 +18,7 @@ delete *.dat      % delete dat file of abaqus
 
 format long
 fitall_sa = zeros(1000,7);      % monitor iteration don't change row #  (1000),  column #: design variable #+1, see myoutSA.m
-CHKEXIT = 9999999;
+% CHKEXIT = 9999999;
 ALSDTOL = 0.05;                 %  maximum allowable ratio of the stabilization energy to the total strain energy default: 0.05
 STABLIZ = 2e-2;
 INCREMEINI = 1e-4;
@@ -26,18 +26,18 @@ INCREME = 0.01;                 % 0.01 increment of abaqus
 
 L1 = 35;    % mm
 H1 = 50;    % mm
-L2 = 70;    % mm
-H2 = 100;   % mm
+% L2 = 70;    % mm
+% H2 = 100;   % mm
 
 % --------------------------------------------------------------
-NINNER = 40;            % number of elements of inner beam
-NOUTER = 40;            % number of elements of outer beam
+UPPER = 40;             % number of elements of upper beam
+LOWER = 40;             % number of elements of lower beam
 YOUNG = 3.5e+3;         % 3.5e+3 [MPa] Young's modulus
 NUXY = 0.38;
 DENS = 1.400000e-06;    % tonne/mm^3
 OPDIM = 3;              % 5.5 [mm] beam out of plane dimension
-IPDIM = 0.8;            % [mm] 0.3 inner beam inplane dimension
-IPDIMOU = 0.8;          % [mm] 0.35 outer beam inplane dimension
+IPDIMU = 0.8;           % [mm] 0.8 upper beam inplane dimension
+IPDIML = 0.8;           % [mm] 0.8 lower beam inplane dimension
 GAP = 5;                % gap between the upper and lower beam for the actuation shuttle
 % --------------------------------------------------------------
 
@@ -83,11 +83,11 @@ ByU = [H1 B2Y B3Y B4Y B5Y B6Y H1]';
 dummy = [1 1 1 1 1 1 1]';
 
 % Calculate point coordinates for Bezier upper beam
-[xU_1 yU_1 temp] = Bezierauto(BxU,ByU,dummy,NINNER);
+[xU yU temp] = Bezierauto(BxU,ByU,dummy,UPPER);
 
 % Point coordinates for Bezier upper beam
-pointsxU = [xU_1(1:end)];
-pointsyU = [yU_1(1:end)];
+pointsxU = [xU(1:end)];
+pointsyU = [yU(1:end)];
 
 %%%%%%%%%%%%%%%%%%%%
 %
@@ -108,11 +108,11 @@ ByL = [0 B12Y B11Y B10Y B9Y B8Y H1]';
 dummy = [1 1 1 1 1 1 1]';
 
 % Calculate point coordinates for Bezier lower beam
-[xL_1 yL_1 temp] = Bezierauto(BxL,ByL,dummy,NOUTER);
+[xL yL temp] = Bezierauto(BxL,ByL,dummy,LOWER);
 
 % Point coordinates for Bezier lower beam 
-pointsxL = [xL_1(1:end)];
-pointsyL = [yL_1(1:end)];
+pointsxL = [xL(1:end)];
+pointsyL = [yL(1:end)];
 
 % ---------------------------------------
 % Initial shape of upper beam, lower beam
@@ -139,7 +139,7 @@ grid on;
 DELTATH = -10;  % in -y direction 
 
 % Caculate gap between the upper and lower beam
-func_sb_gap(GAP,NINNER,NOUTER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIM,IPDIMOU,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+func_sb_gap(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
 
 % --- Delete Abaqus redudant files ---
 delete *.com
