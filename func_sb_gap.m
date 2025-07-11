@@ -5,11 +5,11 @@ format long
 
 % upper beam
 %pointsxU = [xL_1b(1:end)];
-%pointsyU = [yL_1b(1:end)];   % 
+%pointsyU = [yL_1b(1:end)];
 
 % lower beam
 %pointsxL = [xL_1a(1:end)];
-%pointsyL = [yL_1a(1:end)];   % 
+%pointsyL = [yL_1a(1:end)];
 pointsyL = pointsyL - GAP;   
 
 %% static analysis
@@ -24,12 +24,12 @@ fprintf (plane_file , 'abaqus job=sb interactive\n');
 fprintf (plane_file , 'gawk -f oh.awk sb.dat > sb_fea.txt\n');
 % Print out the set for upper nodes
 fprintf (plane_file , '*NODE, nset=nset_upper\n');
-for i = 1:size(pointsxU,1)           % Create nodes of inner beam
+for i = 1:size(pointsxU,1)           % Create nodes of upper beam
     fprintf (plane_file , '%d , %6e , %6e, 0\n' , i , pointsxU(i) , pointsyU(i));
 end
 % Print out the set for lower nodes
 fprintf (plane_file , '*NODE, nset=nset_lower\n');
-for i = 1:size(pointsxL,1)           % Create the 1st node to next to the last node of outer beam
+for i = 1:size(pointsxL,1)           % Create the 1st node next to the last node of lower beam
     fprintf (plane_file , '%d , %6e , %6e, 0\n' , size(pointsxU,1)+i , pointsxL(i), pointsyL(i));
 end
 fprintf (plane_file , '*NSET, NSET=nset_anchor_upper\n');
@@ -46,17 +46,17 @@ fprintf (plane_file , '*NSET, NSET=nset_all\n');
 fprintf (plane_file , 'nset_upper,nset_lower \n');
 
 fprintf (plane_file , '** --- Mesh the beam --- \n');
-fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamIN\n');
+fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamU\n');
 for i = 1:UPPER  % upper beam
     fprintf (plane_file , '%d , %d , %d\n', i, i, i+1);
 end
-fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamOU\n');
+fprintf (plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamL\n');
 for i = 1:LOWER  % lower beam
     fprintf (plane_file , '%d , %d , %d\n', UPPER+i, size(pointsxU,1)+i, size(pointsxU,1)+i+1);
 end
 
 fprintf (plane_file , '*ELSET,ELSET=elset_beam\n');
-fprintf (plane_file , 'elset_beamOU,elset_beamIN \n');
+fprintf (plane_file , 'elset_beamL,elset_beamU \n');
 
 fprintf (plane_file , '*MATERIAL,NAME = POM\n');
 fprintf (plane_file , '*ELASTIC\n');
@@ -64,12 +64,12 @@ fprintf (plane_file , '%6e\n',YOUNG);
 fprintf (plane_file , '*DENSITY\n');
 fprintf (plane_file , '%6e\n',DENS);
 
-fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamIN,MATERIAL=POM\n');
+fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamU,MATERIAL=POM\n');
 fprintf (plane_file , '%f,%f\n',OPDIM,IPDIMU);
 fprintf (plane_file , '** dimension along the first beam section axis, dimension along the second beam section axis\n');
 fprintf (plane_file , '%d,%d,%d\n',0,0,-1);
 fprintf (plane_file , '** First, second, third direction cosine of the first beam section axis \n');
-fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamOU,MATERIAL=POM\n');
+fprintf (plane_file , '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamL,MATERIAL=POM\n');
 fprintf (plane_file , '%f,%f\n',OPDIM,IPDIML);
 fprintf (plane_file , '** dimension along the first beam section axis, dimension along the second beam section axis\n');
 fprintf (plane_file , '%d,%d,%d\n',0,0,-1);
@@ -203,7 +203,8 @@ while i <= length(lines)
                 % Find MAXIMUM line
                 while i <= length(lines)
                     if contains(lines{i}, 'MAXIMUM')
-                        if i > length(lines), break; end
+                        if i > length(lines), break; 
+                        end
                         tokens = strsplit(strtrim(lines{i}));
                         if numel(tokens) >= 3
                             upper_coor1_max = str2double(tokens{2});
@@ -237,7 +238,7 @@ FSLEGEND=12;
 
 figure(1)
 hndl=plot(-sb_fea(:,1),sb_fea(:,3),'b-',-sb_fea(:,1),sb_fea(:,4),'r--');
-set( hndl, 'LineWidth', LW );
+set(hndl, 'LineWidth', LW);
 set(gca, 'linewidth', LW, 'fontsize', FSLABEL); % axis and tick label 
 iniX1=legend('RF1','RF2','location','best');
 legend('boxoff');
@@ -251,7 +252,7 @@ grid on;
 
 figure(2)
 hndl=plot(-sb_fea(:,1),abs(sb_fea(:,5)),'b-');
-set( hndl, 'LineWidth', LW );
+set(hndl, 'LineWidth', LW);
 set(gca, 'linewidth', LW, 'fontsize', FSLABEL); % axis and tick label 
 %iniX1=legend('RF1','RF2','location','best');
 %legend('boxoff');
@@ -264,7 +265,7 @@ grid on;
 
 figure(3)
 hndl=plot(-sb_fea(:,1),sb_fea(:,10),'b-');
-set( hndl, 'LineWidth', LW );
+set(hndl, 'LineWidth', LW);
 set(gca, 'linewidth', LW, 'fontsize', FSLABEL); % axis and tick label 
 %iniX1=legend('RF1','RF2','location','best');
 %legend('boxoff');

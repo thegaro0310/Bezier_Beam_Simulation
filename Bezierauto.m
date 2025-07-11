@@ -26,12 +26,15 @@ for i = 2:a-1
     C(i) = Pas(a-(i-1),i);
 end
 % Compute Bernstein Basis for All t-values
-for i =1:n+1
+for i = 1:n+1
     t = T(i);
+    % First Bez index
     Bez(i,1) = C(1)*(1-t)^(a-1);
     for j = 2:a-1
+        % Middle Bez indexs
         Bez(i,j) = C(j)*(1-t)^(a-j)*(t)^(j-1);
     end
+    % Last Bez index
     Bez(i,a) = C(a)*(t)^(a-1);
 end
 % Multiply Basis with Control Points
