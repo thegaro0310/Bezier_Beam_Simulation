@@ -6,7 +6,7 @@
 % force outputs at the anchors for the gap case  
 % is nearly the same as the case without gap 
 %
-% !abaqus job=rbmu18 interactive
+% !abaqus job=sb interactive
 % !gawk -f oh.awk rbmu18.dat > rbmb.txt
 
 clear all;
@@ -109,10 +109,10 @@ grid on;
 DELTATH = -10;  % in -y direction 
 
 % Caculate gap between the upper and lower beam
-func_sb_gap(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+% func_elements_B21H(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
 
 % Calculate the elements set for CPE4R
-% func_elements_CPE4R(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
+func_elements_CPE4R(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
 
 % --- Delete Abaqus redudant files ---
 delete *.com
