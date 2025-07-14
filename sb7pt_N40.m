@@ -42,9 +42,9 @@ GAP = 5;                % gap between the upper and lower beam for the actuation
 % --------------------------------------------------------------
 
 % Loads the optimized Bezier design data 
-load -ascii iters7pt_se6.txt
+load -ascii iters7pt_se8.txt
 % Selects the last row for the current simulation
-pop=iters7pt_se6(end,:);
+pop=iters7pt_se8(end,:);
 
 %%%%%%%%%%%%%%%%%%%%
 %
@@ -108,11 +108,11 @@ grid on;
 
 DELTATH = -10;  % in -y direction 
 
-% Caculate gap between the upper and lower beam
-% func_elements_B21H(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+% Caculate beam elements
+func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
 
-% Calculate the elements set for CPE4R
-func_elements_CPE4R(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
+% Calculate CPE4R elements
+func_CPE4R_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
 
 % --- Delete Abaqus redudant files ---
 delete *.com

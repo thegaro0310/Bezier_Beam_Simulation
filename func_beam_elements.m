@@ -1,4 +1,4 @@
-function ftar = func_elements_B21H(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL)
+function ftar = func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL)
 % calculate objective
 % N, mm, tonne, sec, MPa
 format long
@@ -10,7 +10,7 @@ format long
 % lower beam
 %pointsxL = [xL_1a(1:end)];
 %pointsyL = [yL_1a(1:end)];
-pointsyL = pointsyL - GAP;   
+pointsyL = pointsyL - GAP;
 
 %% static analysis
 plane_file = fopen('sb.inp','w+');
