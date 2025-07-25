@@ -12,18 +12,16 @@
 clear all;
 close all;
 clc
-
 delete *.lck      % delete lock file of abaqus
-delete *.dat      % delete dat file of abaqus
+% delete *.dat      % delete dat file of abaqus
 
 format long
 fitall_sa = zeros(1000,7);      % monitor iteration don't change row #  (1000),  column #: design variable #+1, see myoutSA.m
-% CHKEXIT = 9999999;
 ALSDTOL = 0.05;                 %  maximum allowable ratio of the stabilization energy to the total strain energy default: 0.05
 STABLIZ = 2e-2;
 INCREMEINI = 1e-4;
 INCREME = 0.01;                 % 0.01 increment of abaqus 
-
+% CHKEXIT = 9999999;
 % L1 = 35;    % mm
 % H1 = 50;    % mm
 % L2 = 70;    % mm
@@ -39,18 +37,21 @@ OPDIM = 3;              % 3 [mm] beam out of plane dimension
 IPDIMU = 0.8;           % 0.8 [mm] upper beam inplane dimension
 IPDIML = 0.8;           % 0.8 [mm] lower beam inplane dimension
 GAP = 5;                % gap between the upper and lower beam for the actuation shuttle
+SCALED_FACTOR = 1;      % scaled factor apply to beam elements
 % --------------------------------------------------------------
 
+% -----------------------------------------------
 % Loads the optimized Bezier design data 
 load -ascii iters7pt_se8.txt
 % Selects the last row for the current simulation
-pop=iters7pt_se8(end,:);
+pop = iters7pt_se8(end,:);
+% -----------------------------------------------
 
-%%%%%%%%%%%%%%%%%%%%
+% ---------------------------------------
 %
 % Upper bezier beams
 %
-%%%%%%%%%%%%%%%%%%%%
+% ---------------------------------------
 L1 = pop(19);
 H1 = pop(20);
 
@@ -66,14 +67,14 @@ dummy = [1 1 1 1 1 1 1]';
 pointsxU = [xU(1:end)];
 pointsyU = [yU(1:end)];
 
-%%%%%%%%%%%%%%%%%%%%
+% ---------------------------------------
 %
 % Lower bezier beams
 %
-%%%%%%%%%%%%%%%%%%%%
+% ---------------------------------------
 
 % coordinates of seven control points for lower beam
-BxL = [0 pop(9) pop(11) pop(13) pop(15) pop(17) L1]';
+BxL = [0 pop(9)  pop(11) pop(13) pop(15) pop(17) L1]';
 ByL = [0 pop(10) pop(12) pop(14) pop(16) pop(18) H1]';
 dummy = [1 1 1 1 1 1 1]';
 
@@ -85,7 +86,9 @@ pointsxL = [xL(1:end)];
 pointsyL = [yL(1:end)];
 
 % ---------------------------------------
+%
 % Initial shape of upper beam, lower beam
+%
 % ---------------------------------------
 LW = 2;                % Plot line width
 FSLABEL = 12;          % Plot font size
@@ -96,7 +99,7 @@ FNAME = "Helvetica";   % Plot font name
 
 % Plot the figure
 figure(100);
-hnd1 = plot(pointsxU,pointsyU,'-ob',pointsxL,pointsyL,'-or',BxU,ByU,'dm',BxL,ByL,'xk');
+hnd1 = plot(pointsxU.*SCALED_FACTOR,pointsyU.*SCALED_FACTOR,'-ob',pointsxL.*SCALED_FACTOR,pointsyL.*SCALED_FACTOR,'-or',BxU,ByU,'dm',BxL,ByL,'xk');
 set(hnd1,'LineWidth',LW,'MarkerSize',MS);
 %legend("Undeformed shape");
 %legend('boxoff');
@@ -108,11 +111,20 @@ grid on;
 
 DELTATH = -10;  % in -y direction 
 
+% ----------------------
+% 
 % Caculate beam elements
-func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+% 
+% ----------------------
+% func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+% func_beam_elements(GAP,UPPER,LOWER,pointsxU.*SCALED_FACTOR,pointsyU.*SCALED_FACTOR,pointsxL.*SCALED_FACTOR,pointsyL.*SCALED_FACTOR,YOUNG,NUXY,DENS,OPDIM,IPDIMU.*SCALED_FACTOR,IPDIML.*SCALED_FACTOR,DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
 
+% ------------------------
+% 
 % Calculate CPE4R elements
-func_CPE4R_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
+% 
+% ------------------------
+% func_CPE4R_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,pointsyL,YOUNG,NUXY,DENS,OPDIM,IPDIMU,IPDIML,DELTATH,INCREME,INCREMEINI);
 
 % --- Delete Abaqus redudant files ---
 delete *.com

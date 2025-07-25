@@ -1,15 +1,32 @@
 function extract_and_plot_fea()
+    clc;
+    clear all;
+    close all;
+    delete *.lck      % delete lock file of abaqus
+    % delete *.dat      % delete dat file of abaqus
+    
+    % ==============
+    % Run abaqus job
+    % ==============
+    % !abaqus job=sb_cpe4r_scaled_0_4 interactive
+
+    % ==================================================
     % Step 1: Read sb.dat, sb_cpe4r.dat and extract data
+    % ==================================================
     lines = read_data_sb('sb.dat');
-    lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r.dat');
+    lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_scaled_0_4.dat');
 
-    % Step 2: Parse and extract results
-    extract_data_CPE4R_elements(lines_cpe4r);
-    extract_data_beam_elements(lines);
+    % =======================================================================
+    % Step 2: Parse and extract results (open text file and write data to it)
+    % =======================================================================
+    extract_data_beam_elements(lines, 'sb_fea.txt');
+    extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_scaled_0_4_fea.txt');
 
+    % =============================
     % Step 3: Load and plot results
-    sb_fea = load('sb_fea.txt');  % Nx10 matrix
-    sb_cpe4r_fea = load('sb_cpe4r_fea.txt');
+    % =============================
+    sb_fea = load('sb_fea.txt');
+    sb_cpe4r_fea = load('sb_cpe4r_scaled_0_4_fea.txt');
     LW = 2; FSLABEL = 12; FSLEGEND = 12;
 
     % Plot 1: Reaction Force vs Displacement
@@ -36,7 +53,7 @@ function extract_and_plot_fea()
     % Plot 3: Strain Energy vs Displacement
     figure(3)
     plot(-sb_fea(:,1), sb_fea(:,10), 'g-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--','LineWidth', LW);
-  %  plot(-sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--', 'LineWidth', LW);
+    %plot(-sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--', 'LineWidth', LW);
     lgd = legend('ENERGY-B21H', 'ENERGY-CPE4R', 'Location', 'best');
     set(lgd, 'FontSize', FSLEGEND);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
@@ -47,6 +64,7 @@ function extract_and_plot_fea()
 end
 
 function lines = read_data_sb(filename)
+    fprintf('Reading file %s. \n', filename);
     % Read sb.dat
     fid = fopen(filename, 'r');
     if fid == -1
@@ -63,6 +81,7 @@ function lines = read_data_sb(filename)
 end
 
 function lines_cpe4r = read_data_sb_cpe4r(filename)
+    fprintf('Reading file %s. \n', filename);    
     % Read sb_cpe4r.dat
     fid_cpe4r = fopen(filename, 'r');
     if fid_cpe4r == -1
@@ -78,9 +97,10 @@ function lines_cpe4r = read_data_sb_cpe4r(filename)
     fclose(fid_cpe4r);
 end
 
-function extract_data_beam_elements(lines)
+function extract_data_beam_elements(lines, filename)
+    fprintf('Extracting data to file %s. \n', filename);
     % Extract for beam elements
-    fidw = fopen('sb_fea.txt', 'w');
+    fidw = fopen(filename, 'w');
     i = 1;
     while i <= length(lines)
         line = strtrim(lines{i});
@@ -178,9 +198,10 @@ function extract_data_beam_elements(lines)
     fclose(fidw);
 end
 
-function extract_data_CPE4R_elements(lines_cpe4r)
+function extract_data_CPE4R_elements(lines_cpe4r, filename)
+    fprintf('Extracting data to file %s. \n', filename);
     % Extract for CPE4R elements
-    fidw_cpe4r = fopen('sb_cpe4r_fea.txt', 'w');
+    fidw_cpe4r = fopen(filename, 'w');
     i = 1;
     while i <= length(lines_cpe4r)
         line = strtrim(lines_cpe4r{i});
