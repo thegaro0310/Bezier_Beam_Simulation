@@ -76,10 +76,13 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 ---
 ## How to do step by step to do beam simulation:
 1.Codes to construct bezier curve equation to bezier beam, this is the shape of the beam. Need to undestand the code logic if you have no experience. At this stage, there are 3 files you need to take in mind:
-    * sb.inp, this is input for abaqus to generate sb.odb and sb.dat, this can also be use in Hypermesh later to figure out the sets of the beam.
-    * sb.dat, this is data file, contains infromation needed to plot the figures.
-    * sb_fea.txt, this is the extracted data from sb.dat, the matlab code will import data from here.
+* sb.inp, this is input for abaqus to generate sb.odb and sb.dat, this can also be use in Hypermesh later to figure out the sets of the beam.
+* sb.dat, this is data file, contains infromation needed to plot the figures.
+* sb_fea.txt, this is the extracted data from sb.dat, the matlab code will import data from here.
+
 2.The code original just to simulate beam elements, to do simulation for CPE4R elements, we should take care of the logic to mesh the beam in CPE4R. The original code do it for B21H beam elements. So we need to construct a code to do in CPE4R.
+
 3.Then something like sb_cpe4r.inp will be generated, import this one to Hypermesh and do the meshing, validating and construct the beam sets (follow the sb.inp file).
+
 4.After that, export the data file (give it an meaningless extension, in our case, it’s *.inut), then from our sb_cpe4r.inp, include that data file and make sure it in the correct format so our *.dat file could be written and extracted perfectly.
 5.Now run it with abaqus command and *.dat file will be generated, run the extract_and_plot_fea.m in matlab, the figures now will be plotted.
