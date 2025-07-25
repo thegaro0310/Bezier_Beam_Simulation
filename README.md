@@ -20,24 +20,24 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 
 **These are the header of the inp file**
 
-    `***RESTART,WRITE,FREQUENCY = 9999,overlay
+    ***RESTART,WRITE,FREQUENCY = 9999,overlay
     *Heading
     By Dung-An Wang
     Create: June 17th, 2025
-    Modified:`
+    Modified:
 
 **This is the abaqus job command**
 
-    `abaqus job=sb_cpe4r interactive
-    gawk -f oh.awk sb_cpe4r.dat > sb_cpe4r_fea.txt`
+    abaqus job=sb_cpe4r interactive
+    gawk -f oh.awk sb_cpe4r.dat > sb_cpe4r_fea.txt
 
 **This includes the data file exported from Hypermesh**
 
-    `*INCLUDE, input=sb_cpe4r.inut`
+    *INCLUDE, input=sb_cpe4r.inut
 
 **This is the main content of the inp file, should be kept like this**
 
-    `*ELSET,ELSET=elset_beam
+    *ELSET,ELSET=elset_beam
     elset_all
     *MATERIAL,NAME = POM
     *ELASTIC
@@ -72,7 +72,7 @@ Reason? Because this affects the format of the *.dat file directly, change singl
     S,E
     *NODE output,nset=nset_all
     U,RF
-    *END STEP`
+    *END STEP
 ---
 ## How to do step by step to do beam simulation:
 1.Codes to construct bezier curve equation to bezier beam, this is the shape of the beam. Need to undestand the code logic if you have no experience. At this stage, there are 3 files you need to take in mind:
