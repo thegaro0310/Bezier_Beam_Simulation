@@ -1,26 +1,26 @@
-function extract_and_plot_fea()
+function func_extract_and_plot_fea()
     clc;
     clear all;
     close all;
-    delete *.lck      % delete lock file of abaqus
-    % delete *.dat      % delete dat file of abaqus
+    delete *.lck;       % delete lock file of abaqus
     
-    % ==============
-    % Run abaqus job
-    % ==============
+    % ============================
+    % ------ Run abaqus job ------
+    % ============================
+    % !abaqus job=sb interactive
     % !abaqus job=sb_cpe4r_scaled_0_4 interactive
 
     % ==================================================
     % Step 1: Read sb.dat, sb_cpe4r.dat and extract data
     % ==================================================
-    lines = read_data_sb('sb.dat');
-    lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_scaled_0_4.dat');
+    % lines = read_data_sb('sb.dat');
+    % lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_scaled_0_4.dat');
 
     % =======================================================================
     % Step 2: Parse and extract results (open text file and write data to it)
     % =======================================================================
-    extract_data_beam_elements(lines, 'sb_fea.txt');
-    extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_scaled_0_4_fea.txt');
+    % extract_data_beam_elements(lines, 'sb_fea.txt');
+    % extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_scaled_0_4_fea.txt');
 
     % =============================
     % Step 3: Load and plot results
