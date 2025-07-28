@@ -7,32 +7,33 @@ function func_extract_and_plot_fea()
     % ============================
     % ------ Run abaqus job ------
     % ============================
-    % !abaqus job=sb interactive
+    fprintf('Running abaqus for job=sb\n');
+    !abaqus job=sb interactive
     % !abaqus job=sb_cpe4r_scaled_0_4 interactive
 
     % ==================================================
     % Step 1: Read sb.dat, sb_cpe4r.dat and extract data
     % ==================================================
-    % lines = read_data_sb('sb.dat');
+    lines = read_data_sb('sb.dat');
     % lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_scaled_0_4.dat');
 
     % =======================================================================
     % Step 2: Parse and extract results (open text file and write data to it)
     % =======================================================================
-    % extract_data_beam_elements(lines, 'sb_fea.txt');
+    extract_data_beam_elements(lines, 'sb_fea.txt');
     % extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_scaled_0_4_fea.txt');
 
     % =============================
     % Step 3: Load and plot results
     % =============================
     sb_fea = load('sb_fea.txt');
-    sb_cpe4r_fea = load('sb_cpe4r_scaled_0_4_fea.txt');
+    % sb_cpe4r_fea = load('sb_cpe4r_scaled_0_4_fea.txt');
     LW = 2; FSLABEL = 12; FSLEGEND = 12;
 
     % Plot 1: Reaction Force vs Displacement
     figure(1)
-    plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,2), 'b--', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,3), 'r--', 'LineWidth', LW);
-    %plot(-sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,2), 'b--', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,3), 'r--', 'LineWidth', LW);
+    plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', 'LineWidth', LW);
+    % plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,2), 'b--', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,3), 'r--', 'LineWidth', LW);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
     ylabel('Force (N)', 'FontSize', FSLABEL);
     lgd = legend('RF1-B21H', 'RF2-B21H','RF1-CPE4R','RF2-CPE4R', 'Location', 'best');
@@ -42,8 +43,8 @@ function func_extract_and_plot_fea()
 
     % Plot 2: Max Stress vs Displacement
     figure(2)
-    plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', -sb_cpe4r_fea(:,1), abs(sb_cpe4r_fea(:,4)), 'k--', 'LineWidth', LW);
-    %plot(-sb_cpe4r_fea(:,1), abs(sb_cpe4r_fea(:,4)), 'k--', 'LineWidth', LW);
+    plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', 'LineWidth', LW);
+    % plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', -sb_cpe4r_fea(:,1), abs(sb_cpe4r_fea(:,4)), 'k--', 'LineWidth', LW);
     lgd = legend('S-B21H', 'S-CPE4R', 'Location', 'best');
     set(lgd, 'FontSize', FSLEGEND);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
@@ -52,8 +53,8 @@ function func_extract_and_plot_fea()
 
     % Plot 3: Strain Energy vs Displacement
     figure(3)
-    plot(-sb_fea(:,1), sb_fea(:,10), 'g-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--','LineWidth', LW);
-    %plot(-sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--', 'LineWidth', LW);
+    plot(-sb_fea(:,1), sb_fea(:,10), 'g-', 'LineWidth', LW);
+    % plot(-sb_fea(:,1), sb_fea(:,10), 'g-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--','LineWidth', LW);
     lgd = legend('ENERGY-B21H', 'ENERGY-CPE4R', 'Location', 'best');
     set(lgd, 'FontSize', FSLEGEND);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);

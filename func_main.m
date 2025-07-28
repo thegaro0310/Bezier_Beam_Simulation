@@ -23,7 +23,7 @@ function main()
     % Loads the optimized Bezier design data 
     % ======================================
     UPPER = 40; LOWER = 40;     % number of elements for upper and lower beams
-    func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR);
+    [pointsxU, pointsyU, pointsxL, pointsyL] = func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR);
 
     % ===========================================
     % Configuration for beam elements calculation
@@ -42,22 +42,22 @@ function main()
     % =======================================    
     % Apply scaled factor to only B21H beam elements
     % CPE4R beam elements would be scaled and optimized in other tools
-    % func_beam_elements(   GAP,UPPER,LOWER,
-    %                       pointsxU.*SCALED_FACTOR,pointsyU.*SCALED_FACTOR,
-    %                       pointsxL.*SCALED_FACTOR,pointsyL.*SCALED_FACTOR, 
-    %                       YOUNG,NUXY,DENS,OPDIM,
-    %                       IPDIMU.*SCALED_FACTOR,IPDIML.*SCALED_FACTOR, 
-    %                       DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
+    func_beam_elements(GAP,UPPER,LOWER, ...
+                       pointsxU.*SCALED_FACTOR,pointsyU.*SCALED_FACTOR, ...
+                       pointsxL.*SCALED_FACTOR,pointsyL.*SCALED_FACTOR, ...
+                       YOUNG,NUXY,DENS,OPDIM, ...
+                       IPDIMU.*SCALED_FACTOR,IPDIML.*SCALED_FACTOR, ...
+                       DELTATH,INCREME,INCREMEINI,STABLIZ,ALSDTOL);
 
     % ========================================
     % ------- Calculate CPE4R elements -------
     % ========================================
-    % func_cpe4r_elements(  GAP,UPPER,LOWER,
-    %                       pointsxU,pointsyU,
-    %                       pointsxL,pointsyL, 
-    %                       YOUNG,NUXY,DENS,OPDIM,
-    %                       IPDIMU,IPDIML, 
-    %                       DELTATH,INCREME,INCREMEINI);
+    % func_cpe4r_elements(GAP,UPPER,LOWER, ...
+    %                     pointsxU,pointsyU, ...
+    %                     pointsxL,pointsyL, ...
+    %                     YOUNG,NUXY,DENS,OPDIM, ...
+    %                     IPDIMU,IPDIML, ...
+    %                     DELTATH,INCREME,INCREMEINI);
 
     % --- Delete Abaqus redudant files ---
     delete *.com
@@ -75,7 +75,7 @@ function main()
     delete *.rpy*
 end
 
-function func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR)
+function [pointsxU, pointsyU, pointsxL, pointsyL] = func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR)
     % ======================================
     % Loads the optimized Bezier design data 
     % ======================================
@@ -123,7 +123,7 @@ function func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR)
     % =======================================
     % ---- Plot the shape of Bezier beam ----
     % =======================================
-    fprintf('Plot the shape of Bezier beam');
+    fprintf('Plot the shape of Bezier beam\n');
     figure(100);
     title('Bezier Beam Shape');
     hnd1 = plot(pointsxU.*SCALED_FACTOR,pointsyU.*SCALED_FACTOR,'-ob',pointsxL.*SCALED_FACTOR,pointsyL.*SCALED_FACTOR,'-or',BxU,ByU,'dm',BxL,ByL,'xk');

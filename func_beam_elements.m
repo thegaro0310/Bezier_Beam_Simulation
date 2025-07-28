@@ -28,39 +28,39 @@ function ftar = func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,po
     fprintf(plane_file, 'abaqus job=%s interactive\n', baseName);
     fprintf(plane_file, 'gawk -f oh.awk %s.dat > %s_fea.txt\n', baseName, baseName);
     % Print out the set for upper nodes
-    fprintf (plane_file, '*NODE, nset=nset_upper\n');
+    fprintf (plane_file, '*NODE,nset=nset_upper\n');
     % Create nodes of upper beam
     for i = 1 : size(pointsxU, 1)
-        fprintf (plane_file, '%d , %6e , %6e, 0\n' , i, pointsxU(i), pointsyU(i));
+        fprintf (plane_file,'%d,%6e,%6e,0\n', i, pointsxU(i), pointsyU(i));
     end
     % Print out the set for lower nodes
-    fprintf (plane_file, '*NODE, nset=nset_lower\n');
+    fprintf (plane_file, '*NODE,nset=nset_lower\n');
     % Create the 1st node next to the last node of lower beam
     for i = 1 : size(pointsxL, 1)
-        fprintf (plane_file, '%d , %6e , %6e, 0\n', size(pointsxU, 1) + i, pointsxL(i), pointsyL(i));
+        fprintf (plane_file,'%d ,%6e,%6e,0\n', size(pointsxU, 1) + i, pointsxL(i), pointsyL(i));
     end
     fprintf(plane_file, '*NSET, NSET=nset_anchor_upper\n');
     fprintf(plane_file, '%d,\n', 1);
     fprintf(plane_file, '*NSET, NSET=nset_end\n');
-    fprintf(plane_file, '%d,%d \n', size(pointsxU, 1), size(pointsxU, 1) + size(pointsxL, 1));
+    fprintf(plane_file, '%d,%d\n', size(pointsxU, 1), size(pointsxU, 1) + size(pointsxL, 1));
     fprintf(plane_file, '*NSET, NSET=nset_monitor\n');
-    fprintf(plane_file, '%d, \n', size(pointsxU, 1));
+    fprintf(plane_file, '%d,\n', size(pointsxU, 1));
     fprintf(plane_file, '*NSET, NSET=nset_anchor_lower\n');
     fprintf(plane_file, '%d,\n', size(pointsxU, 1) + 1);
     fprintf(plane_file, '*NSET, NSET=nset_anchor\n');
-    fprintf(plane_file, '%d,%d \n', 1, size(pointsxU, 1) + 1);
+    fprintf(plane_file, '%d,%d\n', 1, size(pointsxU, 1) + 1);
     fprintf(plane_file, '*NSET, NSET=nset_all\n');
     fprintf(plane_file, 'nset_upper,nset_lower\n');
     fprintf(plane_file, '** --- Mesh the beam ---\n');
     fprintf(plane_file, '*ELEMENT,TYPE=B21H,ELSET=elset_beamU\n');
     % Element set for upper beam
     for i = 1 : UPPER
-        fprintf(plane_file , '%d , %d , %d\n', i, i, i + 1);
+        fprintf(plane_file,'%d,%d,%d\n', i, i, i + 1);
     end
     fprintf(plane_file , '*ELEMENT,TYPE=B21H,ELSET=elset_beamL\n');
     % Element set for lower beam
     for i = 1 : LOWER
-        fprintf(plane_file, '%d , %d , %d\n', UPPER + i, size(pointsxU, 1) + i, size(pointsxU, 1) + i + 1);
+        fprintf(plane_file,'%d,%d,%d\n', UPPER + i, size(pointsxU, 1) + i, size(pointsxU, 1) + i + 1);
     end
     fprintf(plane_file, '*ELSET,ELSET=elset_beam\n');
     fprintf(plane_file, 'elset_beamL,elset_beamU\n');
@@ -72,12 +72,12 @@ function ftar = func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,po
     fprintf(plane_file, '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamU,MATERIAL=POM\n');
     fprintf(plane_file, '%f,%f\n', OPDIM, IPDIMU);
     fprintf(plane_file, '** dimension along the first beam section axis, dimension along the second beam section axis\n');
-    fprintf(plane_file, '%d,%d,%d\n',0,0,-1);
+    fprintf(plane_file, '%d,%d,%d\n', 0, 0, -1);
     fprintf(plane_file, '** First, second, third direction cosine of the first beam section axis \n');
     fprintf(plane_file, '*BEAM SECTION,SECTION=RECT,ELSET=elset_beamL,MATERIAL=POM\n');
     fprintf(plane_file, '%f,%f\n', OPDIM, IPDIML);
     fprintf(plane_file, '** dimension along the first beam section axis, dimension along the second beam section axis\n');
-    fprintf(plane_file, '%d,%d,%d\n',0,0,-1);
+    fprintf(plane_file, '%d,%d,%d\n', 0, 0, -1);
     fprintf(plane_file, '** First, second, third direction cosine of the first beam section axis \n');
     fprintf(plane_file, '*STEP,INC=9999,NLGEOM,unsymm=yes\n');
     fprintf(plane_file, 'step 1\n');
@@ -91,7 +91,7 @@ function ftar = func_beam_elements(GAP,UPPER,LOWER,pointsxU,pointsyU,pointsxL,po
     fprintf(plane_file, 'nset_end,1,1,0\n');
     fprintf(plane_file, 'nset_end,2,2,%e\n', DELTATH);
     fprintf(plane_file, 'nset_end,6,6,0\n');
-    fprintf(plane_file, '*monitor, dof=2, node=nset_monitor, frequency=1\n');
+    fprintf(plane_file, '*monitor,dof=2,node=nset_monitor,frequency=1\n');
     fprintf(plane_file, '*NODE PRINT,NSET=nset_anchor,TOTALS=YES,FREQUENCY=1,summary=no\n');
     fprintf(plane_file, 'RF,\n');
     fprintf(plane_file, '*NODE PRINT,NSET=nset_monitor,TOTALS=No,FREQUENCY=1,summary=no\n');
