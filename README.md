@@ -36,7 +36,7 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 
 **This includes the data file exported from Hypermesh**
 
-    *INCLUDE, input=sb_cpe4r.inut
+    *INCLUDE,input=sb_cpe4r.inut
 
 **This is the main content of the inp file, should be kept like this**
 
@@ -52,13 +52,13 @@ Reason? Because this affects the format of the *.dat file directly, change singl
     *STEP,INC=9999,NLGEOM,unsymm=yes
     step 1 
     *STATIC 
-    0.000100 , 1.0,1e-10 , 0.010000 
+    0.000100,1.0,1e-10,0.010000 
     *BOUNDARY,op=new
     nset_anchor_upper,1,3,0 
     nset_anchor_lower,1,3,0
     nset_end,1,1,0
     nset_end,2,2,-1.000000e+01
-    *monitor,  dof=2, node=nset_monitor, frequency=1
+    *monitor,dof=2,node=nset_monitor,frequency=1
     *NODE PRINT,NSET=nset_anchor,TOTALS=YES,FREQUENCY=1,summary=no
     RF,
     *NODE PRINT,NSET=nset_monitor,TOTALS=No,FREQUENCY=1,summary=no
@@ -70,7 +70,7 @@ Reason? Because this affects the format of the *.dat file directly, change singl
     ** S12: Shear stress along the second cross-section axis 
     ** S13: Shear stress along the first cross-section axis
     *ENERGY PRINT,elset=elset_beam,FREQUENCY=1
-    *OUTPUT,field, frequency=1
+    *OUTPUT,field,frequency=1
     *ELEMENT OUTPUT
     S,E
     *NODE output,nset=nset_all
