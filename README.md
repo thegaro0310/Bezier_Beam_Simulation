@@ -23,7 +23,7 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 
 **These are the header of the inp file**
 
-    ***RESTART,WRITE,FREQUENCY = 9999,overlay
+    ***RESTART,WRITE,FREQUENCY=9999,overlay
     *Heading
     By Dung-An Wang
     Create: June 17th, 2025
@@ -42,7 +42,7 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 
     *ELSET,ELSET=elset_beam
     elset_all
-    *MATERIAL,NAME = POM
+    *MATERIAL,NAME=POM
     *ELASTIC
     3.500000e+03
     *DENSITY
