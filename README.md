@@ -1,5 +1,7 @@
 # Bezier Beam Simulation
+<div align="center">
 <img width="560" height="420" alt="firgure_100_7pt_se8" src="https://github.com/user-attachments/assets/9f99cddd-9704-43ae-b3d3-5d20ef09be4b" />
+</div>
 
 ## The main code is "sb7pt_N40.m", in which it invokes:
 - "Bezierauto.m" for generating the smooth beam shape (geometry) using a Bezier curve, based on a set of control points (plot 100).
