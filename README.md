@@ -85,4 +85,5 @@ Reason? Because this affects the format of the *.dat file directly, change singl
 3.Then something like sb_cpe4r.inp will be generated, import this one to Hypermesh and do the meshing, validating and construct the beam sets (follow the sb.inp file).
 
 4.After that, export the data file (give it an meaningless extension, in our case, it’s *.inut), then from our sb_cpe4r.inp, include that data file and make sure it in the correct format so our *.dat file could be written and extracted perfectly.
+
 5.Now run it with abaqus command and *.dat file will be generated, run the extract_and_plot_fea.m in matlab, the figures now will be plotted.
