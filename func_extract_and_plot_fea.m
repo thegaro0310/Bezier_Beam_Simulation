@@ -2,38 +2,39 @@ function func_extract_and_plot_fea()
     clc;
     clear all;
     close all;
-    delete *.lck;       % delete lock file of abaqus
+    % delete lock file of abaqus
+    delete *.lck;
     
     % ============================
     % ------ Run abaqus job ------
     % ============================
-    fprintf('Running abaqus for job=sb\n');
-    !abaqus job=sb interactive
-    % !abaqus job=sb_cpe4r_scaled_0_4 interactive
+    fprintf('Running abaqus jobs\n');
+    % !abaqus job=sb interactive
+    !abaqus job=sb_cpe4r_designed interactive
 
     % ==================================================
     % Step 1: Read sb.dat, sb_cpe4r.dat and extract data
     % ==================================================
-    lines = read_data_sb('sb.dat');
-    % lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_scaled_0_4.dat');
+    % lines = read_data_sb('sb.dat');
+    lines_cpe4r = read_data_sb_cpe4r('sb_cpe4r_designed.dat');
 
     % =======================================================================
     % Step 2: Parse and extract results (open text file and write data to it)
     % =======================================================================
-    extract_data_beam_elements(lines, 'sb_fea.txt');
-    % extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_scaled_0_4_fea.txt');
+    % extract_data_beam_elements(lines, 'sb_fea.txt');
+    extract_data_CPE4R_elements(lines_cpe4r, 'sb_cpe4r_designed_fea.txt');
 
     % =============================
     % Step 3: Load and plot results
     % =============================
     sb_fea = load('sb_fea.txt');
-    % sb_cpe4r_fea = load('sb_cpe4r_scaled_0_4_fea.txt');
+    sb_cpe4r_fea = load('sb_cpe4r_designed_fea.txt');
     LW = 2; FSLABEL = 12; FSLEGEND = 12;
 
     % Plot 1: Reaction Force vs Displacement
     figure(1)
-    plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', 'LineWidth', LW);
-    % plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,2), 'b--', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,3), 'r--', 'LineWidth', LW);
+    % plot(-sb_fea(:,1), sb_fea(:,3), 'b-', -sb_fea(:,1), sb_fea(:,4), 'r-', 'LineWidth', LW);
+    plot(-sb_fea(:,1), sb_fea(:,2), 'b-', -sb_fea(:,1), sb_fea(:,3), 'r-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,2), 'b--', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,3), 'r--', 'LineWidth', LW);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
     ylabel('Force (N)', 'FontSize', FSLABEL);
     lgd = legend('RF1-B21H', 'RF2-B21H','RF1-CPE4R','RF2-CPE4R', 'Location', 'best');
@@ -43,8 +44,8 @@ function func_extract_and_plot_fea()
 
     % Plot 2: Max Stress vs Displacement
     figure(2)
-    plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', 'LineWidth', LW);
-    % plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', -sb_cpe4r_fea(:,1), abs(sb_cpe4r_fea(:,4)), 'k--', 'LineWidth', LW);
+    % plot(-sb_fea(:,1), abs(sb_fea(:,5)), 'k-', 'LineWidth', LW);
+    plot(-sb_fea(:,1), abs(sb_fea(:,4)), 'k-', -sb_cpe4r_fea(:,1), abs(sb_cpe4r_fea(:,4)), 'k--', 'LineWidth', LW);
     lgd = legend('S-B21H', 'S-CPE4R', 'Location', 'best');
     set(lgd, 'FontSize', FSLEGEND);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
@@ -53,8 +54,8 @@ function func_extract_and_plot_fea()
 
     % Plot 3: Strain Energy vs Displacement
     figure(3)
-    plot(-sb_fea(:,1), sb_fea(:,10), 'g-', 'LineWidth', LW);
-    % plot(-sb_fea(:,1), sb_fea(:,10), 'g-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--','LineWidth', LW);
+    % plot(-sb_fea(:,1), sb_fea(:,10), 'g-', 'LineWidth', LW);
+    plot(-sb_fea(:,1), sb_fea(:,9), 'g-', -sb_cpe4r_fea(:,1), sb_cpe4r_fea(:,9), 'g--','LineWidth', LW);
     lgd = legend('ENERGY-B21H', 'ENERGY-CPE4R', 'Location', 'best');
     set(lgd, 'FontSize', FSLEGEND);
     xlabel('Displacement (mm)', 'FontSize', FSLABEL);
@@ -62,6 +63,11 @@ function func_extract_and_plot_fea()
     grid on;
 
     fprintf('Extraction complete. Plots generated.\n');
+
+    % ========================================
+    % ----- Delete Abaqus redudant files -----
+    % ========================================
+    delete_abaqus_redundant_files();
 end
 
 function lines = read_data_sb(filename)
@@ -108,7 +114,8 @@ function extract_data_beam_elements(lines, filename)
         if contains(line, 'ELSET_BEAM')
             s11_out = NaN; allse = NaN;
             rf1 = NaN; rf2 = NaN;
-            input_u2 = NaN; monitor_rf2 = NaN;
+            input_u2 = NaN; 
+            % monitor_rf2 = NaN;
             upper_coor1_max = NaN; upper_coor2_max = NaN;
             upper_u1_max = NaN; upper_u2_max = NaN;
 
@@ -163,35 +170,35 @@ function extract_data_beam_elements(lines, filename)
                     tokens = strsplit(strtrim(lines{i}));
                     if numel(tokens) >= 6
                         input_u2 = str2double(tokens{3});
-                        monitor_rf2 = str2double(tokens{6});
+                        % monitor_rf2 = str2double(tokens{6});
                     end
                     break;
                 end
                 i = i + 1;
             end
 
-            while i <= length(lines)
-                if contains(lines{i}, 'NSET_UPPER')
-                    while i <= length(lines)
-                        if contains(lines{i}, 'MAXIMUM')
-                            tokens = strsplit(strtrim(lines{i}));
-                            if numel(tokens) >= 5
-                                upper_coor1_max = str2double(tokens{2});
-                                upper_coor2_max = str2double(tokens{3});
-                                upper_u1_max = str2double(tokens{4});
-                                upper_u2_max = str2double(tokens{5});
-                            end
-                            break;
-                        end
-                        i = i + 1;
-                    end
-                    break;
-                end
-                i = i + 1;
-            end
+            % while i <= length(lines)
+            %     if contains(lines{i}, 'NSET_UPPER')
+            %         while i <= length(lines)
+            %             if contains(lines{i}, 'MAXIMUM')
+            %                 tokens = strsplit(strtrim(lines{i}));
+            %                 if numel(tokens) >= 5
+            %                     upper_coor1_max = str2double(tokens{2});
+            %                     upper_coor2_max = str2double(tokens{3});
+            %                     upper_u1_max = str2double(tokens{4});
+            %                     upper_u2_max = str2double(tokens{5});
+            %                 end
+            %                 break;
+            %             end
+            %             i = i + 1;
+            %         end
+            %         break;
+            %     end
+            %     i = i + 1;
+            % end
 
-            fprintf(fidw, '%f %f %f %f %f %f %f %f %f %f\n', ...
-                input_u2, monitor_rf2, rf1, rf2, s11_out, ...
+            fprintf(fidw, '%f %f %f %f %f %f %f %f %f\n', ...
+                input_u2, rf1, rf2, s11_out, ...
                 upper_coor1_max, upper_coor2_max, upper_u1_max, upper_u2_max, allse);
         end
         i = i + 1;
@@ -210,6 +217,7 @@ function extract_data_CPE4R_elements(lines_cpe4r, filename)
             s11_out = NaN; allse = NaN;
             rf1 = NaN; rf2 = NaN;
             input_u2 = NaN;
+            % monitor_rf2 = NaN;
             upper_coor1_max = NaN; upper_coor2_max = NaN;
             upper_u1_max = NaN; upper_u2_max = NaN;
 
@@ -244,13 +252,16 @@ function extract_data_CPE4R_elements(lines_cpe4r, filename)
             end
 
             while i <= length(lines_cpe4r)
-                if contains(lines_cpe4r{i}, 'NSET_ANCHOR')
-                    i = i + 16;
-                    if i > length(lines_cpe4r), break; end
-                    tokens = strsplit(strtrim(lines_cpe4r{i}));
-                    if numel(tokens) >= 3
-                        rf1 = str2double(tokens{2});
-                        rf2 = str2double(tokens{3});
+                if contains(lines_cpe4r{i}, 'NSET_END')
+                    % Find the TOTAL line
+                    while i <= length(lines_cpe4r)
+                        if contains(lines_cpe4r{i}, 'TOTAL')
+                            tokens = regexp(lines_cpe4r{i}, 'TOTAL\s+([\d\.E+-]+)\s+([\d\.E+-]+)', 'tokens');
+                            rf1 = str2double(tokens{1}{1});
+                            rf2 = str2double(tokens{1}{2});
+                            break;
+                        end
+                        i = i + 1;
                     end
                     break;
                 end
@@ -264,37 +275,55 @@ function extract_data_CPE4R_elements(lines_cpe4r, filename)
                     tokens = strsplit(strtrim(lines_cpe4r{i}));
                     if numel(tokens) >= 5
                         input_u2 = str2double(tokens{3});
+                        % monitor_rf2 = str2double(tokens{6});
                     end
                     break;
                 end
                 i = i + 1;
             end
 
-            while i <= length(lines_cpe4r)
-                if contains(lines_cpe4r{i}, 'NSET_UPPER')
-                    while i <= length(lines_cpe4r)
-                        if contains(lines_cpe4r{i}, 'MAXIMUM')
-                            tokens = strsplit(strtrim(lines_cpe4r{i}));
-                            if numel(tokens) >= 5
-                                upper_coor1_max = str2double(tokens{2});
-                                upper_coor2_max = str2double(tokens{3});
-                                upper_u1_max = str2double(tokens{4});
-                                upper_u2_max = str2double(tokens{5});
-                            end
-                            break;
-                        end
-                        i = i + 1;
-                    end
-                    break;
-                end
-                i = i + 1;
-            end
+            % while i <= length(lines_cpe4r)
+            %     if contains(lines_cpe4r{i}, 'NSET_UPPER')
+            %         while i <= length(lines_cpe4r)
+            %             if contains(lines_cpe4r{i}, 'MAXIMUM')
+            %                 tokens = strsplit(strtrim(lines_cpe4r{i}));
+            %                 if numel(tokens) >= 5
+            %                     upper_coor1_max = str2double(tokens{2});
+            %                     upper_coor2_max = str2double(tokens{3});
+            %                     upper_u1_max = str2double(tokens{4});
+            %                     upper_u2_max = str2double(tokens{5});
+            %                 end
+            %                 break;
+            %             end
+            %             i = i + 1;
+            %         end
+            %         break;
+            %     end
+            %     i = i + 1;
+            % end
 
             fprintf(fidw_cpe4r, '%f %f %f %f %f %f %f %f %f\n', ...
-                input_u2, rf1, rf2, s11_out, ...
+                input_u2, -rf1, -rf2, s11_out, ...
                 upper_coor1_max, upper_coor2_max, upper_u1_max, upper_u2_max, allse);
         end
         i = i + 1;
     end
     fclose(fidw_cpe4r);
+end
+
+function delete_abaqus_redundant_files()
+    % --- Delete Abaqus redudant files ---
+    delete *.com
+    delete *.fil
+    delete *.mdl
+    delete *.res
+    delete *.stt
+    delete *.prt
+    delete *.sim
+    delete *.SMABulk
+    delete *.SMAFocus
+    delete *.msg
+    delete *.sta
+    delete *.env
+    delete *.rpy*
 end

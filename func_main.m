@@ -59,28 +59,18 @@ function main()
     %                     IPDIMU,IPDIML, ...
     %                     DELTATH,INCREME,INCREMEINI);
 
-    % --- Delete Abaqus redudant files ---
-    delete *.com
-    delete *.fil
-    delete *.mdl
-    delete *.res
-    delete *.stt
-    delete *.prt
-    delete *.sim
-    delete *.SMABulk
-    delete *.SMAFocus
-    delete *.msg
-    delete *.sta
-    delete *.env
-    delete *.rpy*
+    % ========================================
+    % ----- Delete Abaqus redudant files -----
+    % ========================================
+    delete_abaqus_redundant_files();
 end
 
 function [pointsxU, pointsyU, pointsxL, pointsyL] = func_bezier_beam_shape(UPPER, LOWER, SCALED_FACTOR)
     % ======================================
     % Loads the optimized Bezier design data 
     % ======================================
-    load -ascii iters7pt_se8.txt
-    pop = iters7pt_se8(end,:);
+    data = load('-ascii', 'optimized_design/iters7pt_se8.txt');
+    pop = data(end,:);  % Get last row
 
     % ======================================
     % --------- Upper bezier beams ---------
@@ -135,4 +125,21 @@ function [pointsxU, pointsyU, pointsxL, pointsyL] = func_bezier_beam_shape(UPPER
     ylabel('Y [mm]','FontSize',FSLABEL,'fontname',FNAME);
     axis equal
     grid on;
+end
+
+function delete_abaqus_redundant_files()
+    % --- Delete Abaqus redudant files ---
+    delete *.com
+    delete *.fil
+    delete *.mdl
+    delete *.res
+    delete *.stt
+    delete *.prt
+    delete *.sim
+    delete *.SMABulk
+    delete *.SMAFocus
+    delete *.msg
+    delete *.sta
+    delete *.env
+    delete *.rpy*
 end
