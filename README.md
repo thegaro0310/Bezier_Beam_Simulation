@@ -3,13 +3,13 @@
 <img width="560" height="420" alt="firgure_100_7pt_se8" src="https://github.com/user-attachments/assets/9f99cddd-9704-43ae-b3d3-5d20ef09be4b" />
 </div>
 
-## The main code is "sb7pt_N40.m", in which it invokes:
-- "Bezierauto.m" for generating the smooth beam shape (geometry) using a Bezier curve, based on a set of control points (plot 100).
+## The main code is "func_main.m", in which it invokes:
+- "func_bezier_berstein_form.m" for generating the smooth beam shape (geometry) using a Bezier curve, based on a set of control points (plot 100).
 - "func_beam_elements.m" for simulating the structural behavior of a dual-Bézier-beam actuator (upper & lower beams) using Abaqus, and then extract meaningful mechanical performance data from the simulation (plot 1, 2, 3), this is professor original code.
-- "func_CPE4R_elements.m" to construct CPE4R element type node IDs, then the generated inp file will be loaded in Hypermesh for further work.
-- "extract_and_plot_fea.m" to extract data from *.dat file to *_fea.txt file, then from *_fea.txt, we will plot the figures.
+- "func_cpe4r_elements.m" to construct CPE4R element type node IDs, then the generated inp file will be loaded in Hypermesh for further work.
+- "func_extract_and_plot_fea.m" to extract data from *.dat file to *_fea.txt file, then from *_fea.txt, we will plot the figures.
 
-## Important find to take note
+## Important file to take note
 - "sb_cpe4r.inp" is used to load the CPE4R elements type to Hypermesh (student's code)
 - "sb_cpe4r.odb" is used to load the CPE4R elements type to Abaqus
 - "sb_cpe4r_fea.txt" is extracted data used to plot the reaction force and displacement for beam element type
@@ -17,7 +17,7 @@
 - "sb.odb" is used to load the beam elements (B21H) type to Abaqus
 - "sb_fea.txt" is extracted data used to plot the reaction force and displacement for beam element type
 
-## Proper style to write sb_cpe4r.inp 
+## Proper style to write sb_cpe4r.inp
 An inp file should be like this (This is critical, take many times to figure it out):
 Reason? Because this affects the format of the *.dat file directly, change single line could accordingly change the style of *.dat file and the code (in extract_and_plot_fea.m) cannot extract the data correctly.
 
